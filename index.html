@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CobraYa — Software para Prestamistas | Controla tu Cartera de Préstamos</title>
+<meta name="description" content="CobraYa es el sistema para prestamistas que cobran diario, semanal o mensual. Controla clientes, cuotas, mora y cobranza desde el celular. No otorgamos préstamos: es la herramienta para quienes ya prestan.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --verde-billete:#153B2C;
+    --verde-tinta:#1F4D3A;
+    --verde-claro:#3A7A5E;
+    --crema:#F4EFE0;
+    --papel:#FBF8EF;
+    --raya:rgba(21,59,44,.10);
+    --margen:rgba(196,74,74,.28);
+    --ink:#1B1B18;
+    --ink-suave:#4A4A44;
+    --dorado:#C08A1E;
+    --rojo:#B23A2E;
+    --sombra:0 12px 32px rgba(21,59,44,.14);
+    --radio:16px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--crema);
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.brand{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  img,svg{max-width:100%;display:block;}
+  a{color:inherit;}
+  .container{max-width:1120px;margin:0 auto;padding:0 24px;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 28px;border-radius:999px;border:none;cursor:pointer;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:16px;
+    text-decoration:none;transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    white-space:nowrap;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:var(--dorado);color:#251A03;box-shadow:var(--sombra);}
+  .btn-primary:hover{background:#d49a26;}
+  .btn-outline{background:transparent;color:var(--papel);border:2px solid rgba(251,248,239,.5);}
+  .btn-outline:hover{border-color:var(--papel);}
+  .btn-plan{background:var(--verde-billete);color:var(--papel);width:100%;}
+  .btn-plan:hover{background:var(--verde-tinta);}
+  .btn-plan.destacado{background:var(--dorado);color:#251A03;}
+  .btn-plan.destacado:hover{background:#d49a26;}
+
+  /* ---------- Aviso público ---------- */
+  .aviso{
+    background:var(--verde-billete);color:var(--papel);
+    text-align:center;font-size:14px;font-weight:600;
+    padding:10px 16px;
+  }
+  .aviso strong{color:#F6D98A;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(21,59,44,.96);backdrop-filter:blur(6px);
+    color:var(--papel);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;}
+  .brand{display:flex;align-items:center;gap:8px;font-size:22px;color:var(--papel);}
+  .brand svg{width:26px;height:26px;}
+  .nav-links{display:flex;gap:28px;font-size:15px;font-weight:500;}
+  .nav-links a{opacity:.85;text-decoration:none;}
+  .nav-links a:hover{opacity:1;}
+  @media (max-width:720px){.nav-links{display:none;}}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;overflow:hidden;
+    background:var(--verde-billete);color:var(--papel);
+    padding:72px 0 96px;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background-image:repeating-linear-gradient(
+      to bottom, transparent 0, transparent 37px, rgba(251,248,239,.06) 38px
+    );
+    pointer-events:none;
+  }
+  .hero::after{
+    content:"";position:absolute;top:0;bottom:0;left:64px;width:2px;
+    background:var(--margen);pointer-events:none;
+  }
+  @media (max-width:720px){.hero::after{left:32px;}}
+  .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;}
+  .hero-grid > *{min-width:0;}
+  @media (max-width:900px){.hero-grid{grid-template-columns:1fr;}}
+  .hero-inner{padding-left:24px;}
+  @media (max-width:720px){.hero-inner{padding-left:0;}}
+
+  /* ---------- Mockup de interfaz (demostración) ---------- */
+  .hero-mockup{display:flex;justify-content:center;}
+  .mockup-frame{
+    width:100%;max-width:420px;background:var(--papel);border-radius:16px;
+    box-shadow:0 30px 60px rgba(0,0,0,.35);overflow:hidden;transform:rotate(-2deg);
+  }
+  @media (max-width:900px){.mockup-frame{transform:none;max-width:360px;}}
+  .mockup-topbar{background:#e9e3d2;padding:10px 14px;display:flex;align-items:center;gap:6px;}
+  .mockup-topbar .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .mockup-titulo{margin-left:8px;font-size:12px;color:var(--ink-suave);font-weight:600;font-family:'Inter',sans-serif;}
+  .tag-prestamistas{
+    display:inline-block;background:rgba(251,248,239,.12);
+    border:1px solid rgba(251,248,239,.35);
+    color:#F6D98A;font-size:13px;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;padding:6px 14px;border-radius:999px;margin-bottom:22px;
+  }
+  .hero h1{font-size:clamp(34px,5.5vw,56px);line-height:1.08;}
+  .hero .strike{
+    display:block;text-decoration:line-through;text-decoration-color:rgba(251,248,239,.4);
+    color:rgba(251,248,239,.55);font-size:clamp(22px,3.4vw,30px);margin-bottom:2px;
+  }
+  .hero .contraste{color:#F6D98A;}
+  .hero p.sub{font-size:clamp(16px,2vw,19px);color:rgba(251,248,239,.85);margin:22px 0 8px;max-width:560px;}
+  .hero p.aclara{font-size:14px;color:rgba(251,248,239,.65);margin-bottom:32px;}
+  .hero-ctas{display:flex;flex-wrap:wrap;gap:14px;}
+
+  /* ---------- Secciones genéricas ---------- */
+  section{padding:80px 0;}
+  .kicker{
+    color:var(--dorado);font-weight:700;font-size:13px;letter-spacing:.08em;
+    text-transform:uppercase;margin-bottom:10px;
+  }
+  h2.titulo{font-size:clamp(26px,3.6vw,38px);color:var(--verde-billete);margin-bottom:14px;}
+  p.desc{color:var(--ink-suave);font-size:17px;max-width:620px;}
+  .encabezado-centro{text-align:center;margin:0 auto 48px;max-width:640px;}
+  .encabezado-centro p.desc{margin:0 auto;}
+
+  /* ---------- Dolores ---------- */
+  .dolores{background:var(--papel);}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  @media (max-width:860px){.grid-3{grid-template-columns:1fr;}}
+  .card-dolor{
+    background:var(--crema);border-radius:var(--radio);padding:28px;
+    border:1px solid rgba(21,59,44,.08);
+  }
+  .card-dolor .emoji{font-size:30px;margin-bottom:14px;}
+  .card-dolor h3{font-size:19px;color:var(--verde-billete);margin-bottom:8px;}
+  .card-dolor p{color:var(--ink-suave);font-size:15px;margin:0;}
+
+  /* ---------- Demo del ERP real ---------- */
+  .demo-erp{background:var(--papel);}
+  .shot-frame{
+    background:#fff;border-radius:16px;overflow:hidden;
+    box-shadow:0 20px 50px rgba(21,59,44,.16);border:1px solid #e7e2d2;
+  }
+  .shot-frame--principal{margin-bottom:28px;}
+  .shot-topbar{background:#e9e3d2;padding:10px 14px;display:flex;align-items:center;gap:6px;}
+  .shot-topbar .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .shot-titulo{margin-left:8px;font-size:12px;color:var(--ink-suave);font-weight:600;}
+  .shot-img{display:block;width:100%;height:auto;}
+  .shot-imgwrap{position:relative;}
+  .logo-blur{
+    position:absolute;left:0.3%;top:2.2%;width:11.5%;height:10.5%;
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    background:rgba(27,42,78,.55);border-radius:8px;
+  }
+  .shot-caption{padding:12px 16px;font-size:13px;color:var(--ink-suave);font-weight:600;border-top:1px solid #eee6d3;}
+
+  .grid-3-demos{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  @media (max-width:900px){.grid-3-demos{grid-template-columns:1fr;}}
+
+  /* ---------- Features ---------- */
+  .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;}
+  @media (max-width:1000px){.grid-5{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.grid-5{grid-template-columns:1fr;}}
+  .card-feature{
+    background:#fff;border-radius:var(--radio);padding:26px 20px;text-align:left;
+    box-shadow:0 4px 16px rgba(21,59,44,.06);border:1px solid rgba(21,59,44,.06);
+  }
+  .card-feature .icono{
+    width:44px;height:44px;border-radius:12px;background:var(--verde-billete);
+    color:var(--papel);display:flex;align-items:center;justify-content:center;
+    font-size:20px;margin-bottom:14px;
+  }
+  .card-feature h3{font-size:16px;color:var(--verde-billete);margin-bottom:6px;font-family:'Inter',sans-serif;font-weight:700;}
+  .card-feature p{font-size:14px;color:var(--ink-suave);margin:0;}
+
+  /* ---------- Precios ---------- */
+  .precios{background:var(--verde-billete);color:var(--papel);}
+  .precios .kicker{color:#F6D98A;}
+  .precios h2.titulo{color:var(--papel);}
+  .precios p.desc{color:rgba(251,248,239,.75);}
+  .promo-banner{
+    background:rgba(251,248,239,.1);border:1px dashed rgba(251,248,239,.4);
+    border-radius:14px;padding:14px 20px;margin:0 auto 44px;max-width:640px;text-align:center;
+    font-size:15px;color:#F6D98A;font-weight:600;
+  }
+  .grid-planes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch;}
+  @media (max-width:900px){.grid-planes{grid-template-columns:1fr;max-width:420px;margin:0 auto;}}
+  .plan{
+    position:relative;background:var(--papel);color:var(--ink);
+    border-radius:20px;padding:32px 26px;display:flex;flex-direction:column;gap:18px;
+  }
+  .plan.destacado{outline:3px solid var(--dorado);transform:translateY(-8px);}
+  @media (max-width:900px){.plan.destacado{transform:none;}}
+  .ribbon{
+    position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+    background:var(--dorado);color:#251A03;font-size:12px;font-weight:700;
+    padding:6px 16px;border-radius:999px;letter-spacing:.03em;white-space:nowrap;
+  }
+  .plan h3{font-size:20px;color:var(--verde-billete);}
+  .plan .precio-normal{
+    text-decoration:line-through;color:#9a9188;font-size:16px;font-weight:600;
+  }
+  .plan .precio-promo{font-size:36px;font-weight:700;color:var(--verde-billete);font-family:'Fraunces',serif;}
+  .plan .precio-promo span{font-size:15px;font-weight:500;color:var(--ink-suave);}
+  .plan .precio-luego{font-size:13px;color:var(--ink-suave);}
+  .plan .precio-fijo{font-size:36px;font-weight:700;color:var(--verde-billete);font-family:'Fraunces',serif;}
+  .plan .precio-fijo span{font-size:16px;font-weight:500;color:var(--ink-suave);}
+  .plan .precio-nota{font-size:13px;color:var(--ink-suave);}
+  .plan ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;flex:1;}
+  .plan li{font-size:14.5px;color:var(--ink-suave);padding-left:22px;position:relative;}
+  .plan li::before{content:"✓";position:absolute;left:0;color:var(--verde-billete);font-weight:700;}
+
+  .prueba-gratis{
+    text-align:center;margin-top:40px;color:rgba(251,248,239,.85);font-size:14px;
+  }
+
+  /* ---------- Confianza ---------- */
+  .confianza{background:var(--papel);text-align:center;}
+  .confianza .container{max-width:760px;}
+  .confianza h2.titulo{margin-bottom:12px;}
+
+  /* ---------- Formulario ---------- */
+  .formulario{background:var(--crema);}
+  .form-wrap{
+    background:#fff;border-radius:24px;padding:40px;box-shadow:var(--sombra);
+    display:grid;grid-template-columns:1fr 1fr;gap:36px;
+  }
+  @media (max-width:860px){.form-wrap{grid-template-columns:1fr;padding:28px;}}
+  .form-info h2.titulo{margin-bottom:14px;}
+  .form-info p.desc{margin-bottom:24px;}
+  .plan-elegido{
+    background:var(--crema);border-radius:12px;padding:14px 18px;font-size:14px;
+    color:var(--verde-billete);font-weight:600;margin-bottom:20px;display:none;
+  }
+  .toggle-contacto{display:flex;gap:8px;margin-bottom:8px;}
+  .toggle-btn{
+    flex:1;padding:10px 14px;border-radius:10px;border:1.5px solid #E3DCC8;
+    background:var(--papel);color:var(--ink-suave);font-family:'Inter',sans-serif;
+    font-size:14px;font-weight:600;cursor:pointer;transition:all .15s ease;
+  }
+  .toggle-btn.active{background:var(--verde-billete);color:var(--papel);border-color:var(--verde-billete);}
+
+  form{display:flex;flex-direction:column;gap:16px;}
+  label{font-size:13px;font-weight:600;color:var(--verde-billete);margin-bottom:6px;display:block;}
+  input,select{
+    width:100%;padding:13px 14px;border-radius:10px;border:1.5px solid #E3DCC8;
+    font-family:'Inter',sans-serif;font-size:15px;background:var(--papel);color:var(--ink);
+  }
+  input:focus,select:focus{outline:none;border-color:var(--verde-billete);}
+  .campo-doble{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:480px){.campo-doble{grid-template-columns:1fr;}}
+  .btn-enviar{margin-top:6px;font-size:17px;padding:16px;}
+  .form-nota{font-size:12px;color:var(--ink-suave);text-align:center;}
+  .confirmacion{
+    display:none;background:#e7f3ea;border:1px solid #bfe0c8;color:#1f4d3a;
+    padding:16px;border-radius:12px;font-size:14px;font-weight:600;text-align:center;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{background:var(--verde-billete);color:rgba(251,248,239,.6);text-align:center;
+    padding:28px 24px;font-size:13px;}
+  footer strong{color:var(--papel);}
+</style>
+</head>
+<body>
+
+<div class="aviso">⚡ CobraYa es para <strong>quienes prestan dinero y cobran</strong> — no otorgamos préstamos ni créditos aquí.</div>
+
+<header>
+  <div class="container nav">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" fill="#F6D98A"/></svg>
+      CobraYa
+    </div>
+    <nav class="nav-links">
+      <a href="#dolores">El problema</a>
+      <a href="#funciones">Qué hace</a>
+      <a href="#precios">Planes</a>
+      <a href="#formulario">Prueba gratis</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-inner">
+      <span class="tag-prestamistas">Para prestamistas, no para pedir préstamos</span>
+      <h1><span class="strike">La libreta ya no alcanza.</span><span class="contraste">Controla tus préstamos desde el celular.</span></h1>
+      <p class="sub">CobraYa es el sistema para quienes prestan dinero y cobran diario, semanal o mensual: clientes, cuotas, mora y cobranza en un solo lugar.</p>
+      <p class="aclara">¿Buscas pedir un préstamo? Este no es el lugar — CobraYa es una herramienta de gestión para prestamistas.</p>
+      <div class="hero-ctas">
+        <a href="#formulario" class="btn btn-primary" data-track="cta_hero">Quiero mi prueba gratis</a>
+        <a href="#precios" class="btn btn-outline" data-track="cta_ver_planes">Ver planes</a>
+      </div>
+    </div>
+
+    <div class="hero-mockup" aria-hidden="true">
+      <div class="mockup-frame">
+        <div class="mockup-topbar">
+          <span class="dot" style="background:#e2574c"></span>
+          <span class="dot" style="background:#e2b53c"></span>
+          <span class="dot" style="background:#3cb371"></span>
+          <span class="mockup-titulo">CobraYa — Panel de cartera</span>
+        </div>
+        <div class="shot-imgwrap">
+          <img class="shot-img" src="assets/demo-resumen.png" alt="Panel de resumen diario de CobraYa con cartera total, capital, interés y créditos activos">
+          <span class="logo-blur"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dolores" id="dolores">
+  <div class="container">
+    <div class="encabezado-centro">
+      <div class="kicker">El problema</div>
+      <h2 class="titulo">¿Te suena familiar?</h2>
+      <p class="desc">Así se pierde dinero cuando la cartera se administra a mano.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card-dolor">
+        <div class="emoji">📓</div>
+        <h3>Se te olvidan pagos</h3>
+        <p>Entre libretas, notas sueltas y mensajes de WhatsApp, es fácil perder de vista quién debe pagar hoy.</p>
+      </div>
+      <div class="card-dolor">
+        <div class="emoji">💸</div>
+        <h3>Pierdes dinero por falta de control</h3>
+        <p>Sin un registro claro de mora y atrasos, no sabes cuánto realmente estás ganando después de los que no pagan.</p>
+      </div>
+      <div class="card-dolor">
+        <div class="emoji">🤷</div>
+        <h3>"Ya pagué" sin comprobante</h3>
+        <p>Sin recibos ni estados de cuenta, cada discusión de pago se vuelve tu palabra contra la del cliente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="demo-erp" id="demo">
+  <div class="container">
+    <div class="encabezado-centro">
+      <div class="kicker">Así se ve por dentro</div>
+      <h2 class="titulo">El sistema real, no una promesa</h2>
+      <p class="desc">Esto es CobraYa funcionando hoy, con una cartera real en operación.</p>
+    </div>
+
+    <div class="shot-frame shot-frame--principal">
+      <div class="shot-topbar">
+        <span class="dot" style="background:#e2574c"></span>
+        <span class="dot" style="background:#e2b53c"></span>
+        <span class="dot" style="background:#3cb371"></span>
+        <span class="shot-titulo">app.cobraya.mx — Resumen del día</span>
+      </div>
+      <div class="shot-imgwrap">
+        <img class="shot-img" src="assets/demo-resumen.png" alt="Panel de resumen diario de CobraYa con cartera total, capital, interés y créditos activos">
+        <span class="logo-blur"></span>
+      </div>
+    </div>
+
+    <div class="grid-3-demos">
+      <div class="shot-frame">
+        <div class="shot-topbar">
+          <span class="dot" style="background:#e2574c"></span>
+          <span class="dot" style="background:#e2b53c"></span>
+          <span class="dot" style="background:#3cb371"></span>
+          <span class="shot-titulo">Reportes</span>
+        </div>
+        <div class="shot-imgwrap">
+          <img class="shot-img" src="assets/demo-reportes.png" alt="Reporte de abonos vencidos agrupados por mes en CobraYa">
+          <span class="logo-blur"></span>
+        </div>
+        <div class="shot-caption">Reportes de mora y cobranza, mes a mes</div>
+      </div>
+
+      <div class="shot-frame">
+        <div class="shot-topbar">
+          <span class="dot" style="background:#e2574c"></span>
+          <span class="dot" style="background:#e2b53c"></span>
+          <span class="dot" style="background:#3cb371"></span>
+          <span class="shot-titulo">Contabilidad</span>
+        </div>
+        <div class="shot-imgwrap">
+          <img class="shot-img" src="assets/demo-pagos.png" alt="Detalle de pagos e ingresos acumulados en CobraYa">
+          <span class="logo-blur"></span>
+        </div>
+        <div class="shot-caption">Cada pago con su recibo, sin "ya te había pagado"</div>
+      </div>
+
+      <div class="shot-frame">
+        <div class="shot-topbar">
+          <span class="dot" style="background:#e2574c"></span>
+          <span class="dot" style="background:#e2b53c"></span>
+          <span class="dot" style="background:#3cb371"></span>
+          <span class="shot-titulo">Configuración</span>
+        </div>
+        <div class="shot-imgwrap">
+          <img class="shot-img" src="assets/demo-productos.png" alt="Catálogo de productos de crédito configurables en CobraYa">
+          <span class="logo-blur"></span>
+        </div>
+        <div class="shot-caption">Tus propios productos: diario, semanal, quincenal o mensual</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="funciones" id="funciones">
+  <div class="container">
+    <div class="encabezado-centro">
+      <div class="kicker">Qué hace CobraYa</div>
+      <h2 class="titulo">Todo lo que hoy haces en la libreta, ordenado y automático</h2>
+      <p class="desc">Reemplaza la libreta y el Excel con un sistema pensado para cómo realmente cobras.</p>
+    </div>
+    <div class="grid-5">
+      <div class="card-feature">
+        <div class="icono">👥</div>
+        <h3>Clientes</h3>
+        <p>Toda tu cartera organizada: datos, historial y estado de cada cliente.</p>
+      </div>
+      <div class="card-feature">
+        <div class="icono">📅</div>
+        <h3>Cuotas</h3>
+        <p>Calendario de pagos diarios, semanales o mensuales sin confusiones.</p>
+      </div>
+      <div class="card-feature">
+        <div class="icono">⏰</div>
+        <h3>Atrasos y mora</h3>
+        <p>Identifica al instante quién debe y cuánto lleva de atraso.</p>
+      </div>
+      <div class="card-feature">
+        <div class="icono">📞</div>
+        <h3>Cobranza</h3>
+        <p>Da seguimiento a la cobranza en campo, incluso con varios cobradores.</p>
+      </div>
+      <div class="card-feature">
+        <div class="icono">🧾</div>
+        <h3>Recibos y estados de cuenta</h3>
+        <p>Genera comprobantes reales: se acaba el "yo ya había pagado".</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="precios" id="precios">
+  <div class="container">
+    <div class="encabezado-centro">
+      <div class="kicker">Planes y precios</div>
+      <h2 class="titulo">Elige el tamaño de tu cartera</h2>
+      <p class="desc">Precios claros, sin letras chiquitas. Cambia de plan cuando tu cartera crezca.</p>
+    </div>
+
+    <div class="promo-banner">🎉 Plan Solo: 2 semanas de prueba gratis sin tarjeta + tu primer mes a $199. Cartera Grande y Con Cobradores: precio fijo, solicita y paga en línea por transferencia.</div>
+
+    <div class="grid-planes">
+      <div class="plan">
+        <h3>Solo</h3>
+        <p style="font-size:13px;color:var(--ink-suave);margin:-10px 0 0;">Hasta 60 clientes en cartera</p>
+        <div>
+          <div class="precio-normal">$349/mes</div>
+          <div class="precio-promo">$199 <span>tu primer mes</span></div>
+          <div class="precio-luego">Después, $349/mes</div>
+        </div>
+        <ul>
+          <li>Hasta 60 clientes en cartera</li>
+          <li>Control de cuotas y mora</li>
+          <li>Recibos y estados de cuenta</li>
+          <li>2 semanas de prueba gratis</li>
+        </ul>
+        <button class="btn btn-plan" data-track="plan_solo" data-plan="Solo">Elegir Solo</button>
+      </div>
+
+      <div class="plan destacado">
+        <span class="ribbon">★ El más elegido</span>
+        <h3>Cartera Grande</h3>
+        <p style="font-size:13px;color:var(--ink-suave);margin:-10px 0 0;">Clientes ilimitados</p>
+        <div>
+          <div class="precio-fijo">$549 <span>/mes</span></div>
+          <div class="precio-nota">Precio fijo · solicita y paga en línea por transferencia</div>
+        </div>
+        <ul>
+          <li>Clientes ilimitados en cartera</li>
+          <li>Reporte de ganancia real después de mora</li>
+          <li>Control de cuotas y mora</li>
+          <li>Recibos y estados de cuenta</li>
+          <li>Solicita y paga en línea por transferencia (SPEI), sin tarjeta</li>
+        </ul>
+        <button class="btn btn-plan destacado" data-track="plan_cartera_grande" data-plan="Cartera Grande">Elegir Cartera Grande</button>
+      </div>
+
+      <div class="plan">
+        <h3>Con Cobradores</h3>
+        <p style="font-size:13px;color:var(--ink-suave);margin:-10px 0 0;">Clientes ilimitados + equipo de cobranza</p>
+        <div>
+          <div class="precio-fijo">$800 <span>/mes</span></div>
+          <div class="precio-nota">Precio fijo · solicita y paga en línea por transferencia</div>
+        </div>
+        <ul>
+          <li>Todo lo de Cartera Grande</li>
+          <li>Hasta 5 cobradores con acceso propio</li>
+          <li>Registro de cobros en campo</li>
+          <li>Reporte de desempeño por cobrador</li>
+          <li>Recordatorios automáticos de pago a tus clientes</li>
+          <li>Soporte prioritario por WhatsApp</li>
+          <li>Solicita y paga en línea por transferencia (SPEI), sin tarjeta</li>
+        </ul>
+        <button class="btn btn-plan" data-track="plan_cobradores" data-plan="Con Cobradores">Elegir Con Cobradores</button>
+      </div>
+    </div>
+
+    <p class="prueba-gratis">Plan Solo: sin tarjeta durante las 2 semanas de prueba, tú decides si continuar antes de que se cobre el primer mes. Cartera Grande y Con Cobradores se activan de inmediato pagando por transferencia en línea.</p>
+  </div>
+</section>
+
+<section class="confianza">
+  <div class="container">
+    <div class="kicker">Confianza</div>
+    <h2 class="titulo">Manejas dinero real, lo sabemos</h2>
+    <p class="desc" style="margin:0 auto;">CobraYa se construyó para prestamistas mexicanos que cobran todos los días. Tus datos y los de tus clientes están protegidos, y tú decides quién de tu equipo puede ver qué.</p>
+  </div>
+</section>
+
+<section class="formulario" id="formulario">
+  <div class="container">
+    <div class="form-wrap">
+      <div class="form-info">
+        <div class="kicker">Empieza hoy</div>
+        <h2 class="titulo">Prueba CobraYa 2 semanas gratis</h2>
+        <p class="desc">Sin tarjeta. Deja tus datos y te contactamos para activar tu prueba.</p>
+        <div class="plan-elegido" id="planElegidoBox">Plan seleccionado: <span id="planElegidoTexto"></span></div>
+      </div>
+      <div>
+        <div class="confirmacion" id="confirmacion">¡Listo! Recibimos tus datos, te contactamos en menos de 24 horas para activar tu prueba gratis.</div>
+        <form id="leadForm">
+          <div>
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo">
+          </div>
+          <div>
+            <label>¿Cómo te contactamos?</label>
+            <div class="toggle-contacto">
+              <button type="button" class="toggle-btn active" data-modo="correo">Correo</button>
+              <button type="button" class="toggle-btn" data-modo="numero">Número</button>
+            </div>
+            <input type="email" id="contacto" name="contacto" required placeholder="tu@correo.com" inputmode="email">
+          </div>
+          <div class="campo-doble">
+            <div>
+              <label for="cartera">Tamaño de tu cartera actual</label>
+              <select id="cartera" name="cartera" required>
+                <option value="" disabled selected>Selecciona una opción</option>
+                <option value="menos de 20">Menos de 20 clientes</option>
+                <option value="20-60">20 a 60 clientes</option>
+                <option value="60-150">60 a 150 clientes</option>
+                <option value="mas de 150">Más de 150 clientes</option>
+                <option value="apenas voy a empezar">Apenas voy a empezar</option>
+              </select>
+            </div>
+            <div>
+              <label for="edad">Edad (opcional)</label>
+              <select id="edad" name="edad">
+                <option value="">Prefiero no decir</option>
+                <option value="18-25">18 a 25</option>
+                <option value="26-35">26 a 35</option>
+                <option value="36-45">36 a 45</option>
+                <option value="46-55">46 a 55</option>
+                <option value="56-65">56 a 65</option>
+                <option value="66+">66 o más</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="plan">Plan que te interesa</label>
+            <select id="plan" name="plan" required>
+              <option value="" disabled selected>Selecciona un plan</option>
+              <option value="Solo">Solo — hasta 60 clientes ($349/mes)</option>
+              <option value="Cartera Grande">Cartera Grande — clientes ilimitados ($549/mes)</option>
+              <option value="Con Cobradores">Con Cobradores — hasta 5 cobradores ($800/mes)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-enviar" data-track="cta_form_submit">Quiero mi prueba gratis</button>
+          <p class="form-nota">Al enviar aceptas que te contactemos por WhatsApp o correo sobre tu prueba gratis.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>CobraYa</strong> — software de gestión para prestamistas. Hecho en Acapulco, México.
+</footer>
+
+<script>
+(function(){
+  // ---------- Configuración ----------
+  var API_URL = "https://TU-SERVIDOR.up.railway.app";
+
+  // ---------- Sesión anónima ----------
+  function getSessionId(){
+    var key = 'mp_session_id';
+    var id = sessionStorage.getItem(key);
+    if(!id){
+      id = (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2)));
+      sessionStorage.setItem(key, id);
+    }
+    return id;
+  }
+  var sessionId = getSessionId();
+
+  function sendEvent(payload){
+    payload.sessionId = sessionId;
+    payload.ts = Date.now();
+    var url = API_URL.replace(/\/$/, '') + '/api/event';
+    var blob = new Blob([JSON.stringify(payload)], {type:'application/json'});
+    if(navigator.sendBeacon){
+      navigator.sendBeacon(url, blob);
+    } else {
+      fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload), keepalive:true}).catch(function(){});
+    }
+  }
+
+  // ---------- Pageview ----------
+  sendEvent({
+    type:'pageview',
+    path: location.pathname,
+    screenWidth: window.innerWidth,
+    referrer: document.referrer || 'directo'
+  });
+
+  // ---------- Clicks en botones importantes ----------
+  document.querySelectorAll('[data-track]').forEach(function(el){
+    el.addEventListener('click', function(){
+      sendEvent({ type:'click', label: el.getAttribute('data-track') });
+    });
+  });
+
+  // ---------- Selección de plan desde tarjetas de precios ----------
+  var planSelect = document.getElementById('plan');
+  var planBox = document.getElementById('planElegidoBox');
+  var planTexto = document.getElementById('planElegidoTexto');
+  document.querySelectorAll('[data-plan]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var plan = btn.getAttribute('data-plan');
+      if(planSelect){ planSelect.value = plan; }
+      if(planBox && planTexto){
+        planTexto.textContent = plan;
+        planBox.style.display = 'block';
+      }
+      document.getElementById('formulario').scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  // ---------- Toggle Correo / Número en el formulario ----------
+  var contactoInput = document.getElementById('contacto');
+  document.querySelectorAll('.toggle-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var modo = btn.getAttribute('data-modo');
+      if(modo === 'numero'){
+        contactoInput.type = 'tel';
+        contactoInput.placeholder = 'Tu número a 10 dígitos';
+        contactoInput.setAttribute('inputmode', 'tel');
+      } else {
+        contactoInput.type = 'email';
+        contactoInput.placeholder = 'tu@correo.com';
+        contactoInput.setAttribute('inputmode', 'email');
+      }
+      contactoInput.value = '';
+    });
+  });
+
+  // ---------- Scroll máximo ----------
+  var maxScrollPct = 0;
+  function calcScroll(){
+    var doc = document.documentElement;
+    var scrollTop = window.scrollY || doc.scrollTop;
+    var height = doc.scrollHeight - doc.clientHeight;
+    if(height <= 0) return;
+    var pct = Math.min(100, Math.round((scrollTop / height) * 100));
+    if(pct > maxScrollPct) maxScrollPct = pct;
+  }
+  var scrollTicking = false;
+  window.addEventListener('scroll', function(){
+    if(!scrollTicking){
+      requestAnimationFrame(function(){ calcScroll(); scrollTicking = false; });
+      scrollTicking = true;
+    }
+  });
+
+  // ---------- Tiempo en página + salida ----------
+  var startTime = Date.now();
+  var exitSent = false;
+  function sendExit(){
+    if(exitSent) return;
+    exitSent = true;
+    var seconds = Math.round((Date.now() - startTime) / 1000);
+    sendEvent({ type:'exit', seconds: seconds, scrollPct: maxScrollPct });
+  }
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'hidden') sendExit();
+  });
+  window.addEventListener('pagehide', sendExit);
+
+  // ---------- Envío del formulario (lead) ----------
+  var form = document.getElementById('leadForm');
+  var confirmacion = document.getElementById('confirmacion');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var data = {
+      sessionId: sessionId,
+      nombre: document.getElementById('nombre').value,
+      contacto: document.getElementById('contacto').value,
+      cartera: document.getElementById('cartera').value,
+      edad: document.getElementById('edad').value,
+      plan: document.getElementById('plan').value
+    };
+    var submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+    var url = API_URL.replace(/\/$/, '') + '/api/lead';
+    fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    }).then(function(res){
+      if(!res.ok) throw new Error('error');
+      form.style.display = 'none';
+      confirmacion.style.display = 'block';
+    }).catch(function(){
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Quiero mi prueba gratis';
+      alert('No pudimos enviar tus datos. Por favor intenta de nuevo o escríbenos por correo.');
+    });
+  });
+})();
+</script>
+</body>
+</html>
