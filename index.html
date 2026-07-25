@@ -110,13 +110,27 @@
   /* ---------- Mockup de interfaz (demostración) ---------- */
   .hero-mockup{display:flex;justify-content:center;}
   .mockup-frame{
-    width:100%;max-width:420px;background:var(--papel);border-radius:16px;
+    width:100%;max-width:480px;background:var(--papel);border-radius:16px;
     box-shadow:0 30px 60px rgba(0,0,0,.35);overflow:hidden;transform:rotate(-2deg);
   }
-  @media (max-width:900px){.mockup-frame{transform:none;max-width:360px;}}
+  @media (max-width:900px){.mockup-frame{transform:none;max-width:380px;}}
   .mockup-topbar{background:#e9e3d2;padding:10px 14px;display:flex;align-items:center;gap:6px;}
   .mockup-topbar .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
   .mockup-titulo{margin-left:8px;font-size:12px;color:var(--ink-suave);font-weight:600;font-family:'Inter',sans-serif;}
+  .mockup-body{padding:26px 24px 22px;}
+  .mockup-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px;}
+  .mockup-kpi{
+    display:flex;flex-direction:column;gap:6px;background:#fff;border-radius:14px;
+    padding:16px 14px;box-shadow:0 4px 14px rgba(21,59,44,.08);position:relative;
+  }
+  .mockup-kpi-dot{width:9px;height:9px;border-radius:50%;position:absolute;top:14px;right:14px;}
+  .mockup-kpi .valor{font-family:'Fraunces',serif;font-weight:700;font-size:24px;color:var(--verde-billete);line-height:1;}
+  .mockup-kpi .valor.rojo{color:var(--rojo);}
+  .mockup-kpi .etiqueta{font-size:11.5px;color:var(--ink-suave);font-weight:600;}
+  .mockup-chart{background:#fff;border-radius:14px;padding:16px 18px 8px;box-shadow:0 4px 14px rgba(21,59,44,.08);}
+  .mockup-chart-titulo{font-size:12.5px;font-weight:700;color:var(--verde-billete);margin-bottom:8px;}
+  .mockup-chart-titulo span{font-weight:500;color:var(--ink-suave);}
+  .mockup-chart-svg{width:100%;height:88px;display:block;}
   .tag-prestamistas{
     display:inline-block;background:rgba(251,248,239,.12);
     border:1px solid rgba(251,248,239,.35);
@@ -323,9 +337,31 @@
           <span class="dot" style="background:#3cb371"></span>
           <span class="mockup-titulo">CobraYa — Panel de cartera</span>
         </div>
-        <div class="shot-imgwrap">
-          <img class="shot-img" src="assets/demo-resumen.png" alt="Panel de resumen diario de CobraYa con cartera total, capital, interés y créditos activos">
-          <span class="logo-blur"></span>
+        <div class="mockup-body">
+          <div class="mockup-kpis">
+            <div class="mockup-kpi">
+              <span class="mockup-kpi-dot" style="background:#153B2C"></span>
+              <span class="valor">$482,300</span>
+              <span class="etiqueta">Cartera activa</span>
+            </div>
+            <div class="mockup-kpi">
+              <span class="mockup-kpi-dot" style="background:#1FA463"></span>
+              <span class="valor">$18,650</span>
+              <span class="etiqueta">Cobrado hoy</span>
+            </div>
+            <div class="mockup-kpi">
+              <span class="mockup-kpi-dot" style="background:#E14B4B"></span>
+              <span class="valor rojo">12</span>
+              <span class="etiqueta">En mora</span>
+            </div>
+          </div>
+          <div class="mockup-chart">
+            <div class="mockup-chart-titulo">Flujo de pagos <span>· últimos 30 días</span></div>
+            <svg viewBox="0 0 400 110" class="mockup-chart-svg" preserveAspectRatio="none">
+              <polyline points="0,90 40,50 80,75 120,60 160,95 200,30 240,70 280,45 320,85 360,35 400,60" fill="none" stroke="#C08A1E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="200" cy="30" r="5" fill="#153B2C"/>
+            </svg>
+          </div>
         </div>
       </div>
     </div>
