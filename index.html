@@ -615,49 +615,14 @@ src="https://www.facebook.com/tr?id=760110302849070&ev=PageView&noscript=1"
             <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo">
           </div>
           <div>
-            <label>¿Cómo te contactamos?</label>
-            <div class="toggle-contacto">
-              <button type="button" class="toggle-btn active" data-modo="correo">Correo</button>
-              <button type="button" class="toggle-btn" data-modo="numero">Número</button>
-            </div>
-            <input type="email" id="contacto" name="contacto" required placeholder="tu@correo.com" inputmode="email">
+            <label for="contacto">WhatsApp</label>
+            <input type="tel" id="contacto" name="contacto" required placeholder="Tu WhatsApp (ej. 222 123 4567)" inputmode="tel">
           </div>
-          <div class="campo-doble">
-            <div>
-              <label for="cartera">Tamaño de tu cartera actual</label>
-              <select id="cartera" name="cartera" required>
-                <option value="" disabled selected>Selecciona una opción</option>
-                <option value="menos de 20">Menos de 20 clientes</option>
-                <option value="20-60">20 a 60 clientes</option>
-                <option value="60-150">60 a 150 clientes</option>
-                <option value="mas de 150">Más de 150 clientes</option>
-                <option value="apenas voy a empezar">Apenas voy a empezar</option>
-              </select>
-            </div>
-            <div>
-              <label for="edad">Edad (opcional)</label>
-              <select id="edad" name="edad">
-                <option value="">Prefiero no decir</option>
-                <option value="18-25">18 a 25</option>
-                <option value="26-35">26 a 35</option>
-                <option value="36-45">36 a 45</option>
-                <option value="46-55">46 a 55</option>
-                <option value="56-65">56 a 65</option>
-                <option value="66+">66 o más</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label for="plan">Plan que te interesa</label>
-            <select id="plan" name="plan" required>
-              <option value="" disabled selected>Selecciona un plan</option>
-              <option value="Solo">Solo — hasta 60 clientes (prueba gratis)</option>
-              <option value="Cartera Grande">Cartera Grande — clientes ilimitados ($549/mes)</option>
-              <option value="Con Cobradores">Con Cobradores — hasta 5 cobradores ($800/mes)</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-primary btn-enviar" data-track="cta_form_submit">Quiero mi prueba gratis</button>
-          <p class="form-nota">Al enviar aceptas que te contactemos por WhatsApp o correo sobre tu prueba gratis.</p>
+          <input type="hidden" id="cartera" name="cartera" value="">
+          <input type="hidden" id="edad" name="edad" value="">
+          <input type="hidden" id="plan" name="plan" value="">
+          <button type="submit" class="btn btn-primary btn-enviar" data-track="cta_form_submit">Sí, quiero probarlo gratis</button>
+          <p class="form-nota">Te escribimos por WhatsApp en menos de 24 horas.</p>
         </form>
       </div>
     </div>
@@ -728,26 +693,6 @@ src="https://www.facebook.com/tr?id=760110302849070&ev=PageView&noscript=1"
     });
   });
 
-  // ---------- Toggle Correo / Número en el formulario ----------
-  var contactoInput = document.getElementById('contacto');
-  document.querySelectorAll('.toggle-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      document.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.remove('active'); });
-      btn.classList.add('active');
-      var modo = btn.getAttribute('data-modo');
-      if(modo === 'numero'){
-        contactoInput.type = 'tel';
-        contactoInput.placeholder = 'Tu número a 10 dígitos';
-        contactoInput.setAttribute('inputmode', 'tel');
-      } else {
-        contactoInput.type = 'email';
-        contactoInput.placeholder = 'tu@correo.com';
-        contactoInput.setAttribute('inputmode', 'email');
-      }
-      contactoInput.value = '';
-    });
-  });
-
   // ---------- Scroll máximo ----------
   var maxScrollPct = 0;
   function calcScroll(){
@@ -808,7 +753,7 @@ src="https://www.facebook.com/tr?id=760110302849070&ev=PageView&noscript=1"
       if(typeof fbq === 'function'){ fbq('track', 'Lead'); }
     }).catch(function(){
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Quiero mi prueba gratis';
+      submitBtn.textContent = 'Sí, quiero probarlo gratis';
       alert('No pudimos enviar tus datos. Por favor intenta de nuevo o escríbenos por correo.');
     });
   });
